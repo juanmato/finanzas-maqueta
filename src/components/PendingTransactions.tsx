@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import type { Transaction } from '../types';
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, CATEGORY_COLORS, SOURCES } from '../utils/constants';
+import type { Transaction, Currency, PaymentMethod } from '../types';
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, CATEGORY_COLORS, SOURCES, CURRENCIES, PAYMENT_METHODS } from '../utils/constants';
 import { formatCurrency } from '../utils/helpers';
 import { Check, X, Edit3, CheckCheck, XCircle, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 
@@ -19,6 +19,8 @@ export default function PendingTransactions({ transactions, onApprove, onApprove
   const [editType, setEditType] = useState<'income' | 'expense'>('expense');
   const [editDescription, setEditDescription] = useState('');
   const [editSource, setEditSource] = useState('');
+  const [editCurrency, setEditCurrency] = useState<Currency>('UYU');
+  const [editPaymentMethod, setEditPaymentMethod] = useState<PaymentMethod>('efectivo');
 
   function startEdit(t: Transaction) {
     setEditingId(t.id);
@@ -26,10 +28,12 @@ export default function PendingTransactions({ transactions, onApprove, onApprove
     setEditType(t.type);
     setEditDescription(t.description);
     setEditSource(t.source || '');
+    setEditCurrency(t.currency || 'UYU');
+    setEditPaymentMethod(t.paymentMethod || 'efectivo');
   }
 
   function saveEdit(id: string) {
-    onApprove(id, { category: editCategory, type: editType, description: editDescription, source: editSource });
+    onApprove(id, { category: editCategory, type: editType, description: editDescription, source: editSource, currency: editCurrency, paymentMethod: editPaymentMethod });
     setEditingId(null);
   }
 
@@ -97,7 +101,7 @@ export default function PendingTransactions({ transactions, onApprove, onApprove
                       ? 'text-emerald-700 bg-emerald-50'
                       : 'text-red-600 bg-red-50'
                   }`}>
-                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount, t.currency || 'UYU')}
                   </span>
                 </div>
 
@@ -161,6 +165,20 @@ export default function PendingTransactions({ transactions, onApprove, onApprove
                         className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400"
                       >
                         {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                      <select
+                        value={editCurrency}
+                        onChange={(e) => setEditCurrency(e.target.value as Currency)}
+                        className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                      >
+                        {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}
+                      </select>
+                      <select
+                        value={editPaymentMethod}
+                        onChange={(e) => setEditPaymentMethod(e.target.value as PaymentMethod)}
+                        className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                      >
+                        {PAYMENT_METHODS.map((pm) => <option key={pm.value} value={pm.value}>{pm.label}</option>)}
                       </select>
                       <button
                         onClick={() => saveEdit(t.id)}

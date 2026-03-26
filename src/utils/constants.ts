@@ -53,6 +53,19 @@ export const SOURCES = [
   'Otro',
 ];
 
+export const CURRENCIES = [
+  { code: 'UYU' as const, symbol: '$U', label: 'Pesos uruguayos' },
+  { code: 'USD' as const, symbol: 'US$', label: 'Dolares' },
+];
+
+export const PAYMENT_METHODS = [
+  { value: 'efectivo' as const, label: 'Efectivo' },
+  { value: 'debito' as const, label: 'Debito' },
+  { value: 'credito' as const, label: 'Credito' },
+  { value: 'cuenta_bancaria' as const, label: 'Cuenta bancaria' },
+  { value: 'transferencia' as const, label: 'Transferencia' },
+];
+
 export const MONTHS = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',

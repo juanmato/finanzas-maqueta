@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type { Transaction, TransactionType } from '../types';
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, SOURCES } from '../utils/constants';
+import type { Transaction, TransactionType, Currency, PaymentMethod } from '../types';
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, SOURCES, CURRENCIES, PAYMENT_METHODS } from '../utils/constants';
 import { PlusCircle } from 'lucide-react';
 
 interface Props {
@@ -19,6 +19,8 @@ export default function TransactionForm({ onAdd }: Props) {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [source, setSource] = useState('Efectivo');
+  const [currency, setCurrency] = useState<Currency>('UYU');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('efectivo');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const categories = type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
@@ -41,10 +43,12 @@ export default function TransactionForm({ onAdd }: Props) {
       id: uuidv4(),
       type,
       amount: parseFloat(amount),
+      currency,
       category,
       description,
       date,
       source,
+      paymentMethod,
       status: 'approved',
     });
 
@@ -82,17 +86,28 @@ export default function TransactionForm({ onAdd }: Props) {
         </button>
       </div>
 
-      <div>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          placeholder="Monto"
-          value={amount}
-          onChange={(e) => { setAmount(e.target.value); setErrors((p) => { delete p.amount; return { ...p }; }); }}
-          className={`${inputBase} ${errors.amount ? inputErr : inputOk}`}
-        />
-        {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount}</p>}
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Monto"
+            value={amount}
+            onChange={(e) => { setAmount(e.target.value); setErrors((p) => { delete p.amount; return { ...p }; }); }}
+            className={`${inputBase} ${errors.amount ? inputErr : inputOk}`}
+          />
+          {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount}</p>}
+        </div>
+        <select
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value as Currency)}
+          className={`border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 transition-colors ${inputOk} w-24`}
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c.code} value={c.code}>{c.code}</option>
+          ))}
+        </select>
       </div>
 
       <div>
@@ -116,6 +131,16 @@ export default function TransactionForm({ onAdd }: Props) {
       >
         {SOURCES.map((s) => (
           <option key={s} value={s}>{s}</option>
+        ))}
+      </select>
+
+      <select
+        value={paymentMethod}
+        onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+        className={`${inputBase} ${inputOk}`}
+      >
+        {PAYMENT_METHODS.map((pm) => (
+          <option key={pm.value} value={pm.value}>{pm.label}</option>
         ))}
       </select>
 

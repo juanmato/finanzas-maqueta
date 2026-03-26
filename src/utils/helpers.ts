@@ -1,11 +1,11 @@
-import type { Transaction } from '../types';
+import type { Currency, Transaction } from '../types';
 import { MONTHS } from './constants';
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency: 'MXN',
-  }).format(amount);
+export function formatCurrency(amount: number, currency: Currency = 'UYU'): string {
+  if (currency === 'USD') {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+  }
+  return '$U\u00A0' + new Intl.NumberFormat('es-UY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
 }
 
 export function getCurrentMonth(): string {
@@ -26,6 +26,18 @@ export function getTotalByType(transactions: Transaction[], type: 'income' | 'ex
   return transactions
     .filter((t) => t.type === type)
     .reduce((sum, t) => sum + t.amount, 0);
+}
+
+export function getTotalByTypeAndCurrency(transactions: Transaction[], type: 'income' | 'expense', currency: Currency): number {
+  return transactions
+    .filter((t) => t.type === type && (t.currency || 'UYU') === currency)
+    .reduce((sum, t) => sum + t.amount, 0);
+}
+
+export function getUsedCurrencies(transactions: Transaction[]): Currency[] {
+  const set = new Set<Currency>();
+  transactions.forEach((t) => set.add(t.currency || 'UYU'));
+  return [...set].sort();
 }
 
 export function getMonthOptions(transactions: Transaction[]): string[] {

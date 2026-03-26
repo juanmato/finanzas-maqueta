@@ -45,7 +45,7 @@ export default function ExpenseChart({ transactions }: Props) {
               <Cell key={entry.name} fill={CATEGORY_COLORS[entry.name] || '#6b7280'} />
             ))}
           </Pie>
-          <Tooltip formatter={(value: number) => formatCurrency(value)} />
+          <Tooltip formatter={(value) => formatCurrency(Number(value))} />
           <Legend
             formatter={(value: string) => <span className="text-xs text-gray-600">{value}</span>}
           />

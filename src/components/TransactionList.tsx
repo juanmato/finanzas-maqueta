@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import type { Transaction, TransactionType } from '../types';
+import type { Transaction, TransactionType, Currency, PaymentMethod } from '../types';
 import { formatCurrency } from '../utils/helpers';
-import { CATEGORY_COLORS, EXPENSE_CATEGORIES, INCOME_CATEGORIES, SOURCES } from '../utils/constants';
+import { CATEGORY_COLORS, EXPENSE_CATEGORIES, INCOME_CATEGORIES, SOURCES, CURRENCIES, PAYMENT_METHODS } from '../utils/constants';
 import { Trash2, ArrowUpCircle, ArrowDownCircle, Edit3, Check, X, Search } from 'lucide-react';
 
 interface Props {
@@ -19,6 +19,7 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState<'all' | TransactionType>('all');
   const [filterCategory, setFilterCategory] = useState('');
+  const [filterPaymentMethod, setFilterPaymentMethod] = useState('');
 
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -28,6 +29,8 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
   const [editSource, setEditSource] = useState('');
   const [editAmount, setEditAmount] = useState('');
   const [editDate, setEditDate] = useState('');
+  const [editCurrency, setEditCurrency] = useState<Currency>('UYU');
+  const [editPaymentMethod, setEditPaymentMethod] = useState<PaymentMethod>('efectivo');
   const [editErrors, setEditErrors] = useState<Record<string, boolean>>({});
 
   // Derive available categories from current transactions for filter dropdown
@@ -42,12 +45,13 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
     return transactions.filter((t) => {
       if (filterType !== 'all' && t.type !== filterType) return false;
       if (filterCategory && t.category !== filterCategory) return false;
+      if (filterPaymentMethod && (t.paymentMethod || '') !== filterPaymentMethod) return false;
       if (q && !t.description.toLowerCase().includes(q) && !t.category.toLowerCase().includes(q) && !(t.source || '').toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [transactions, searchText, filterType, filterCategory]);
+  }, [transactions, searchText, filterType, filterCategory, filterPaymentMethod]);
 
-  const hasActiveFilters = searchText !== '' || filterType !== 'all' || filterCategory !== '';
+  const hasActiveFilters = searchText !== '' || filterType !== 'all' || filterCategory !== '' || filterPaymentMethod !== '';
 
   function startEdit(t: Transaction) {
     setEditingId(t.id);
@@ -57,6 +61,8 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
     setEditSource(t.source || 'Efectivo');
     setEditAmount(String(t.amount));
     setEditDate(t.date);
+    setEditCurrency(t.currency || 'UYU');
+    setEditPaymentMethod(t.paymentMethod || 'efectivo');
     setEditErrors({});
   }
 
@@ -82,6 +88,8 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
       source: editSource,
       amount: parsedAmount,
       date: editDate,
+      currency: editCurrency,
+      paymentMethod: editPaymentMethod,
     });
     setEditingId(null);
     setEditErrors({});
@@ -121,9 +129,17 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
           <option value="">Todas las categorias</option>
           {availableCategories.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
+        <select
+          value={filterPaymentMethod}
+          onChange={(e) => setFilterPaymentMethod(e.target.value)}
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          <option value="">Todos los medios</option>
+          {PAYMENT_METHODS.map((pm) => <option key={pm.value} value={pm.value}>{pm.label}</option>)}
+        </select>
         {hasActiveFilters && (
           <button
-            onClick={() => { setSearchText(''); setFilterType('all'); setFilterCategory(''); }}
+            onClick={() => { setSearchText(''); setFilterType('all'); setFilterCategory(''); setFilterPaymentMethod(''); }}
             className="text-xs text-indigo-600 hover:text-indigo-800 transition-colors ml-1"
           >
             Limpiar filtros
@@ -214,6 +230,20 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
                     >
                       {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
+                    <select
+                      value={editCurrency}
+                      onChange={(e) => setEditCurrency(e.target.value as Currency)}
+                      className={`${editInputBase} ${editInputOk}`}
+                    >
+                      {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}
+                    </select>
+                    <select
+                      value={editPaymentMethod}
+                      onChange={(e) => setEditPaymentMethod(e.target.value as PaymentMethod)}
+                      className={`${editInputBase} ${editInputOk}`}
+                    >
+                      {PAYMENT_METHODS.map((pm) => <option key={pm.value} value={pm.value}>{pm.label}</option>)}
+                    </select>
                     <div>
                       <input
                         type="date"
@@ -261,7 +291,8 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
                     <p className="text-xs text-gray-400">
                       {t.category}
                       {t.source ? <> &middot; <span className="text-indigo-500">{t.source}</span></> : null}
-                      {' '}&middot; {new Date(t.date + 'T12:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}
+                      {t.paymentMethod ? <> &middot; {PAYMENT_METHODS.find((pm) => pm.value === t.paymentMethod)?.label || t.paymentMethod}</> : null}
+                      {' '}&middot; {new Date(t.date + 'T12:00:00').toLocaleDateString('es-UY', { day: 'numeric', month: 'short' })}
                     </p>
                   </div>
                   <span className={`text-sm font-semibold font-[IBM_Plex_Mono] tabular-nums px-2 py-0.5 rounded shrink-0 ${
@@ -269,7 +300,7 @@ export default function TransactionList({ transactions, onDelete, onUpdate }: Pr
                       ? 'text-emerald-700 bg-emerald-50'
                       : 'text-red-600 bg-red-50'
                   }`}>
-                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount, t.currency || 'UYU')}
                   </span>
                   <button
                     onClick={() => startEdit(t)}

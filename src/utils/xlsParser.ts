@@ -168,6 +168,8 @@ function processRows(rows: unknown[][]): Transaction[] {
       originalDescription: rawDesc,
       date,
       source: '',
+      currency: 'UYU',
+      paymentMethod: 'cuenta_bancaria',
       status: 'pending',
     });
   }

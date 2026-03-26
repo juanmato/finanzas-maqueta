@@ -44,7 +44,7 @@ export default function MonthlyTrend({ transactions }: Props) {
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis dataKey="name" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip formatter={(value: number) => formatCurrency(value)} />
+          <Tooltip formatter={(value) => formatCurrency(Number(value))} />
           <Bar dataKey="Ingresos" fill="#059669" radius={[6, 6, 0, 0]} />
           <Bar dataKey="Gastos" fill="#e63946" radius={[6, 6, 0, 0]} />
         </BarChart>
