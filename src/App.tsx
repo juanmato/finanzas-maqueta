@@ -10,6 +10,7 @@ import MonthlyTrend from './components/MonthlyTrend';
 import BudgetManager from './components/BudgetManager';
 import ImportXls from './components/ImportXls';
 import PendingTransactions from './components/PendingTransactions';
+import DashboardInsights from './components/DashboardInsights';
 import { LayoutDashboard, List, Target, FileSpreadsheet, Clock } from 'lucide-react';
 
 function App() {
@@ -122,6 +123,13 @@ function App() {
         {tab === 'dashboard' && (
           <>
             <SummaryCards transactions={monthTransactions} />
+            <DashboardInsights
+              monthTransactions={monthTransactions}
+              allTransactions={transactions}
+              budgets={budgets}
+              selectedMonth={selectedMonth}
+              onNavigate={(t) => setTab(t as ViewTab)}
+            />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <ExpenseChart transactions={monthTransactions} />
               <MonthlyTrend transactions={approvedTransactions} />
