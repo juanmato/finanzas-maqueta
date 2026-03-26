@@ -21,22 +21,37 @@ export const INCOME_CATEGORIES = [
 ];
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  Alimentacion: '#ef4444',
-  Transporte: '#f97316',
-  Vivienda: '#eab308',
-  Entretenimiento: '#22c55e',
-  Salud: '#06b6d4',
-  Educacion: '#3b82f6',
-  Ropa: '#8b5cf6',
-  Servicios: '#ec4899',
-  Suscripciones: '#f43f5e',
+  Alimentacion: '#e63946',
+  Transporte: '#f4a261',
+  Vivienda: '#2a9d8f',
+  Entretenimiento: '#264653',
+  Salud: '#457b9d',
+  Educacion: '#6d28d9',
+  Ropa: '#db2777',
+  Servicios: '#0891b2',
+  Suscripciones: '#ca8a04',
   Otros: '#6b7280',
-  Salario: '#10b981',
-  Freelance: '#14b8a6',
-  Inversiones: '#6366f1',
-  Ventas: '#a855f7',
-  Regalos: '#f59e0b',
+  Salario: '#059669',
+  Freelance: '#7c3aed',
+  Inversiones: '#1d4ed8',
+  Ventas: '#9333ea',
+  Regalos: '#ea580c',
 };
+
+export const SOURCES = [
+  'Efectivo',
+  'BROU',
+  'Santander',
+  'Itau',
+  'Scotiabank',
+  'BBVA',
+  'HSBC',
+  'Banorte',
+  'Banamex',
+  'Prex',
+  'Mercado Pago',
+  'Otro',
+];
 
 export const MONTHS = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',

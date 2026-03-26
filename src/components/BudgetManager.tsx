@@ -40,12 +40,14 @@ export default function BudgetManager({ budgets, onSetBudgets, transactions, sel
   }
 
   function handleDelete(id: string) {
-    onSetBudgets(budgets.filter((b) => b.id !== id));
+    if (window.confirm('Eliminar este presupuesto?')) {
+      onSetBudgets(budgets.filter((b) => b.id !== id));
+    }
   }
 
   return (
     <div className="space-y-4">
-      <form onSubmit={handleAdd} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+      <form onSubmit={handleAdd} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 animate-slide-up">
         <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <Target size={20} className="text-indigo-500" />
           Definir presupuesto
@@ -73,7 +75,7 @@ export default function BudgetManager({ budgets, onSetBudgets, transactions, sel
         />
         <button
           type="submit"
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2 transition-colors focus-visible:outline-2 focus-visible:outline-indigo-600 focus-visible:outline-offset-2"
         >
           <Plus size={18} />
           Guardar presupuesto
@@ -81,7 +83,7 @@ export default function BudgetManager({ budgets, onSetBudgets, transactions, sel
       </form>
 
       {monthBudgets.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400 animate-fade-in">
           No hay presupuestos definidos para este mes
         </div>
       ) : (
@@ -91,15 +93,19 @@ export default function BudgetManager({ budgets, onSetBudgets, transactions, sel
             const pct = b.limit > 0 ? Math.min((spent / b.limit) * 100, 100) : 0;
             const over = spent > b.limit;
             return (
-              <div key={b.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <div key={b.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-slide-up">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-800">{b.category}</span>
-                  <button onClick={() => handleDelete(b.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                  <button
+                    onClick={() => handleDelete(b.id)}
+                    aria-label={`Eliminar presupuesto ${b.category}`}
+                    className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors rounded-lg focus-visible:outline-2 focus-visible:outline-indigo-600 focus-visible:outline-offset-[-2px]"
+                  >
                     <Trash2 size={15} />
                   </button>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-1.5">
-                  <span>{formatCurrency(spent)} de {formatCurrency(b.limit)}</span>
+                  <span className="font-[IBM_Plex_Mono] tabular-nums">{formatCurrency(spent)} de {formatCurrency(b.limit)}</span>
                   <span className={over ? 'text-red-500 font-semibold' : ''}>{pct.toFixed(0)}%</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2.5">

@@ -21,14 +21,14 @@ export default function ExpenseChart({ transactions }: Props) {
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400 animate-fade-in">
         Sin gastos para graficar
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-slide-up">
       <h3 className="text-sm font-semibold text-gray-700 mb-4">Gastos por categoria</h3>
       <ResponsiveContainer width="100%" height={280}>
         <PieChart>

@@ -10,6 +10,7 @@ export interface Transaction {
   description: string;
   date: string; // YYYY-MM-DD
   status: TransactionStatus;
+  source: string; // bank name or 'Efectivo'
   originalDescription?: string; // raw text from bank
 }
 

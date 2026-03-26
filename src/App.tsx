@@ -31,6 +31,12 @@ function App() {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
   }
 
+  function updateTransaction(id: string, updates: Partial<Transaction>) {
+    setTransactions((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
+    );
+  }
+
   function handleImport(imported: Transaction[]) {
     setTransactions((prev) => [...prev, ...imported]);
     setTab('pending');
@@ -85,31 +91,34 @@ function App() {
         </div>
       </header>
 
-      <nav className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto">
+      {/* Desktop: top tabs. Mobile: bottom fixed nav */}
+      <nav className="bg-white border-b border-gray-100 sm:relative fixed bottom-0 left-0 right-0 z-10 sm:border-b sm:border-t-0 border-t border-gray-200">
+        <div className="max-w-5xl mx-auto px-2 sm:px-4 flex justify-around sm:justify-start sm:gap-1 overflow-x-auto scrollbar-hide">
           {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium border-t-2 sm:border-t-0 sm:border-b-2 transition-colors whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600 ${
                 tab === t.id
-                  ? 'border-indigo-600 text-indigo-600'
+                  ? 'border-indigo-600 text-indigo-600 sm:border-indigo-600'
                   : 'border-transparent text-gray-400 hover:text-gray-600'
               }`}
             >
-              <t.icon size={16} />
-              {t.label}
-              {t.badge ? (
-                <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {t.badge > 99 ? '99+' : t.badge}
-                </span>
-              ) : null}
+              <t.icon size={18} className="sm:w-4 sm:h-4" />
+              <span className="relative">
+                {t.label}
+                {t.badge ? (
+                  <span className="absolute -top-2 -right-4 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {t.badge > 99 ? '99+' : t.badge}
+                  </span>
+                ) : null}
+              </span>
             </button>
           ))}
         </div>
       </nav>
 
-      <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-5xl mx-auto px-4 py-6 pb-20 sm:pb-6 space-y-6 scroll-pt-24">
         {tab === 'dashboard' && (
           <>
             <SummaryCards transactions={monthTransactions} />
@@ -122,7 +131,7 @@ function App() {
                 <TransactionForm onAdd={addTransaction} />
               </div>
               <div className="lg:col-span-2">
-                <TransactionList transactions={monthTransactions} onDelete={deleteTransaction} />
+                <TransactionList transactions={monthTransactions} onDelete={deleteTransaction} onUpdate={updateTransaction} />
               </div>
             </div>
           </>
@@ -134,7 +143,7 @@ function App() {
               <TransactionForm onAdd={addTransaction} />
             </div>
             <div className="lg:col-span-2">
-              <TransactionList transactions={monthTransactions} onDelete={deleteTransaction} />
+              <TransactionList transactions={monthTransactions} onDelete={deleteTransaction} onUpdate={updateTransaction} />
             </div>
           </div>
         )}

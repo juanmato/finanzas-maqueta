@@ -30,14 +30,14 @@ export default function MonthlyTrend({ transactions }: Props) {
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400 animate-fade-in">
         Sin datos para mostrar tendencia
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-slide-up stagger-1">
       <h3 className="text-sm font-semibold text-gray-700 mb-4">Tendencia mensual</h3>
       <ResponsiveContainer width="100%" height={280}>
         <BarChart data={data}>
@@ -45,8 +45,8 @@ export default function MonthlyTrend({ transactions }: Props) {
           <XAxis dataKey="name" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} />
           <Tooltip formatter={(value: number) => formatCurrency(value)} />
-          <Bar dataKey="Ingresos" fill="#10b981" radius={[6, 6, 0, 0]} />
-          <Bar dataKey="Gastos" fill="#ef4444" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="Ingresos" fill="#059669" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="Gastos" fill="#e63946" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

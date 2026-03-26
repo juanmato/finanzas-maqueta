@@ -98,6 +98,13 @@ function isNegativeAmount(value: unknown): boolean {
   return str.includes('-') || (str.includes('(') && str.includes(')'));
 }
 
+const SKIP_DESCRIPTIONS = ['saldo inicial', 'saldo final', 'saldo anterior', 'saldo disponible', 'saldo cierre', 'total'];
+
+function shouldSkipRow(desc: string): boolean {
+  const lower = desc.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return SKIP_DESCRIPTIONS.some((s) => lower.startsWith(s));
+}
+
 function processRows(rows: unknown[][]): Transaction[] {
   const result = findHeaderRow(rows);
   if (!result) return [];
@@ -116,7 +123,7 @@ function processRows(rows: unknown[][]): Transaction[] {
     if (!date) continue;
 
     const rawDesc = descIdx >= 0 ? String(row[descIdx] ?? '').trim() : '';
-    if (!rawDesc) continue;
+    if (!rawDesc || shouldSkipRow(rawDesc)) continue;
 
     let amount = 0;
     let inferredType: 'income' | 'expense' = 'expense';
@@ -160,6 +167,7 @@ function processRows(rows: unknown[][]): Transaction[] {
       description: rawDesc,
       originalDescription: rawDesc,
       date,
+      source: '',
       status: 'pending',
     });
   }

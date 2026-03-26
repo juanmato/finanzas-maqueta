@@ -22,7 +22,7 @@ const CATEGORY_RULES: { keywords: string[]; category: string; type: 'expense' | 
   { keywords: ['freelance', 'honorarios', 'factura', 'proyecto'], category: 'Freelance', type: 'income' },
   { keywords: ['dividendo', 'rendimiento', 'interes', 'inversion'], category: 'Inversiones', type: 'income' },
   { keywords: ['venta', 'mercadolibre', 'mercado libre'], category: 'Ventas', type: 'income' },
-  { keywords: ['transferencia recibida', 'trf e-brou', 'trf brou', 'deposito', 'saldo inicial', 'bonificacion'], category: 'Otros', type: 'income' },
+  { keywords: ['transferencia recibida', 'trf e-brou', 'trf brou', 'deposito', 'bonificacion'], category: 'Otros', type: 'income' },
 ];
 
 export function categorizeDescription(description: string): { category: string; type: 'income' | 'expense' } {
