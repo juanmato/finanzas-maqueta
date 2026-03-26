@@ -19,16 +19,18 @@ export default function TransactionForm({ onAdd }: Props) {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [source, setSource] = useState('Efectivo');
-  const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const categories = type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const newErrors: Record<string, boolean> = {};
-    if (!amount || parseFloat(amount) <= 0) newErrors.amount = true;
-    if (!category) newErrors.category = true;
-    if (!date) newErrors.date = true;
+    const newErrors: Record<string, string> = {};
+    const parsedAmount = parseFloat(amount);
+    if (!amount) newErrors.amount = 'El monto es obligatorio';
+    else if (isNaN(parsedAmount) || parsedAmount <= 0) newErrors.amount = 'Ingresa un monto mayor a 0';
+    if (!category) newErrors.category = 'Selecciona una categoria';
+    if (!date) newErrors.date = 'Selecciona una fecha';
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
       return;
@@ -87,16 +89,16 @@ export default function TransactionForm({ onAdd }: Props) {
           min="0"
           placeholder="Monto"
           value={amount}
-          onChange={(e) => { setAmount(e.target.value); setErrors((p) => ({ ...p, amount: false })); }}
+          onChange={(e) => { setAmount(e.target.value); setErrors((p) => { delete p.amount; return { ...p }; }); }}
           className={`${inputBase} ${errors.amount ? inputErr : inputOk}`}
         />
-        {errors.amount && <p className="text-xs text-red-500 mt-1">Ingresa un monto valido</p>}
+        {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount}</p>}
       </div>
 
       <div>
         <select
           value={category}
-          onChange={(e) => { setCategory(e.target.value); setErrors((p) => ({ ...p, category: false })); }}
+          onChange={(e) => { setCategory(e.target.value); setErrors((p) => { delete p.category; return { ...p }; }); }}
           className={`${inputBase} ${errors.category ? inputErr : inputOk}`}
         >
           <option value="">Selecciona categoria</option>
@@ -104,7 +106,7 @@ export default function TransactionForm({ onAdd }: Props) {
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-        {errors.category && <p className="text-xs text-red-500 mt-1">Selecciona una categoria</p>}
+        {errors.category && <p className="text-xs text-red-500 mt-1">{errors.category}</p>}
       </div>
 
       <select
@@ -129,10 +131,10 @@ export default function TransactionForm({ onAdd }: Props) {
         <input
           type="date"
           value={date}
-          onChange={(e) => { setDate(e.target.value); setErrors((p) => ({ ...p, date: false })); }}
+          onChange={(e) => { setDate(e.target.value); setErrors((p) => { delete p.date; return { ...p }; }); }}
           className={`${inputBase} ${errors.date ? inputErr : inputOk}`}
         />
-        {errors.date && <p className="text-xs text-red-500 mt-1">Selecciona una fecha</p>}
+        {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date}</p>}
       </div>
 
       <button
